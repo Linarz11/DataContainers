@@ -38,6 +38,15 @@ public:
 		New->pNext = Head;
 		Head = New;
 	}
+
+	void push_back(int Data)
+	{
+		Element* New = new Element(Data);
+		Element* Temp = Head;
+		while (Temp->pNext != nullptr)
+			Temp = Temp->pNext;
+		Temp->pNext = New;
+	}
 			//Metods:
 	void print()
 	{
@@ -61,6 +70,8 @@ void main()
 	{
 		list.push_front(rand() % 100);
 	}
+	list.print();
+	list.push_back(666);
 	list.print();
 
 }
