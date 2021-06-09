@@ -74,7 +74,7 @@ public:
 	void insert(unsigned int Index, int Data)
 	{
 		if (Index > size)return;
-		if (Index == 0);
+		if (Index == 0)
 		{
 			push_front(Data);
 			return;
@@ -132,9 +132,70 @@ public:
 		delete Tail->pNext;
 		Tail->pNext = nullptr;
 		size--;
-
 	}
+	void erase(int Index)
+		/*{
+			if (Index > size)return;
+			if (Index == size)
+			{
+				pop_back();
+				return;
+			}
+			if (Index == 0)
+			{
+				pop_front();
+				return;
+			}
 
+			Element* Temp;
+			if (Index < size / 2)
+			{
+				Temp = Head;
+				for (int i = 0; i < Index; i++)
+				{
+					Temp = Temp->pNext;
+				}
+			}
+			else
+			{
+				Temp = Tail;
+				for (int i = 0; i < size - Index - 1; i++)Temp = Temp->pPrev;
+			}
+			Temp->pPrev->pNext = Temp->pNext;
+			Temp->pNext->pPrev = Temp->pPrev;
+			delete Temp;
+			size--;
+		}*/	  //Homework
+	{
+		if (Index == 0)
+		{
+			pop_front();
+			return;
+		}
+		if (Index == size-1)
+		{
+			pop_back();
+			return;
+		}
+		if (Index >= size)return;
+		Element* Temp;
+		if (Index < size / 2)
+		{
+			Temp = Head;
+			for (int i = 0; i < Index; i++)Temp = Temp->pNext;
+		}
+		else
+		{
+			Temp = Tail;
+			for (int i = 0; i<size - Index - 1; i++)Temp = Temp->pPrev;
+		}
+		//1) Исключаем удаляемый элемент из списка:
+		Temp->pPrev->pNext = Temp->pNext;	//В указатель pNext элемента Temp->pPrev записываем адрес элемента Temp->pNext
+		Temp->pNext->pPrev = Temp->pPrev;	//В указатель pPrev элемента Temp->pNext записываем адрес жлемента Temp->pPrev
+		//2) Удаляем элемент из памяти:
+		delete Temp;
+		//Mission complete
+	}
 
 			//Methods
 	void print()
@@ -176,6 +237,12 @@ void main()
 	list.insert(index, value);
 	list.print();
 	list.print_reverse();
+
+	cout << "Введите индекс удаляемого элемента: "; cin >> value;
+	list.erase(index);
+	list.print();
+	list.print_reverse();
+
 	
 
 }
