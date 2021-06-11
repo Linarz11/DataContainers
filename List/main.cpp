@@ -61,6 +61,16 @@ class List
 
 #endif // DEBUG
 		}
+		
+		bool operator==(const BaseIterator& other)const
+		{
+			return this->Temp == other.Temp;
+		}
+		bool operator!=(const BaseIterator& other)const
+		{
+			return this->Temp != other.Temp;
+		}
+
 		int& operator*()
 		{
 			return Temp->Data;
@@ -125,14 +135,14 @@ public:
 			return old;
 		}*/
 
-		bool operator==(const Iterator& other)const
+	/*	bool operator==(const Iterator& other)const
 		{
 			return this->Temp == other.Temp;
 		}
 		bool operator!=(const Iterator& other)const
 		{
 			return this->Temp != other.Temp;
-		}
+		}*/
 
 		
 	};
@@ -142,11 +152,17 @@ public:
 	public:
 		ReverseIterator(Element* Temp = nullptr) :BaseIterator(Temp)
 		{
+#ifdef DEBUG
 			cout << "RICOnstructor:\t" << this << endl;
+
+#endif // DEBUG
 		}
 		~ReverseIterator()
 		{
+#ifdef DEBUG
 			cout << "RIDenstructor:\t" << this << endl;
+
+#endif // DEBUG
 		}
 		ReverseIterator& operator++()
 		{
@@ -171,14 +187,14 @@ public:
 			return old;
 		}
 
-		bool operator==(const ReverseIterator& other)const
+		/*bool operator==(const ReverseIterator& other)const
 		{
 			return this->Temp == other.Temp;
 		}
 		bool operator!=(const ReverseIterator& other)const
 		{
 			return this->Temp != other.Temp;
-		}
+		}*/
 
 	};
 	size_t getSize()const
@@ -200,7 +216,7 @@ public:
 	}
 	ReverseIterator rend()
 	{
-		return Head;
+		return nullptr;
 	}
 
 	List()
@@ -474,13 +490,9 @@ void main()
 	}
 	cout << endl;
 	cout << delimeter << endl;
-	/*for (List::Iterator it = list.end(); it !=list.begin(); --it)
-	{
-		cout << *it << tab;
-	}
-	cout << endl;*/
+	
 
-	for (List::ReverseIterator it = list.rbegin(); it != list.rend(); it++)
+	for (List::ReverseIterator it = list.rbegin(); it != list.rend(); ++it)
 	{
 		cout << *it << tab;
 	}
