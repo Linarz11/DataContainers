@@ -1,7 +1,13 @@
 ﻿#include <iostream>
 using namespace std;
-
+using std::cin;
+using std::cout;
+using std::endl;
 #define tab "\t"
+//#define BASE_CHECK
+//#define SIZE_CONSTRUCTOR_AND_INDEX_OPERATOR
+//#define DEBUG
+#define delimeter "\n---------------------------------------------------------------------------------------------\n"
 class List
 {
 	class Element
@@ -15,11 +21,17 @@ class List
 			this->Data = Data;
 			this->pNext = pNext;
 			this->pPrev = pPrev;
+#ifdef DEBUG
 			cout << "EConstructor:\t" << this << endl;
+
+#endif // DEBUG
 		}
 		~Element()
 		{
+#ifdef DEBUG
 			cout << "EDestructor:\t" << this << endl;
+
+#endif // DEBUG
 		}
 		friend class List;
 
@@ -28,6 +40,153 @@ class List
 	Element* Tail;		//указатель на конечный элемент списка
 	unsigned int size;	// размер списка
 public:
+	class Iterator
+	{
+		Element* Temp;
+	public: 
+		Iterator(Element* Temp = nullptr) :Temp(Temp)
+		{
+#ifdef DEBUG
+			cout << "ITConstructor:\t" << this << endl;
+#endif // DEBUG
+
+		}
+		~Iterator()
+		{
+#ifdef DEBUG
+			cout << "ITDestructor:\t" << this << endl;
+
+#endif // DEBUG
+		}
+
+		Iterator& operator++()
+		{
+			Temp = Temp->pNext;
+			return *this;
+		}
+		Iterator operator++(int)
+		{
+			Iterator old = *this;
+			Temp = Temp->pNext;
+			return old;
+		}
+		Iterator& operator--()
+		{
+			Temp->pPrev;
+			return *this;
+		}
+		Iterator operator--(int)
+		{
+			Iterator old = *this;
+			Temp = Temp->pPrev;
+			return old;
+		}
+		/*Iterator& operator--()
+		{
+			Temp = Temp->pPrev;
+			return *this;
+		}
+		Iterator operator--(int)
+		{
+			Iterator old = *this;
+			Temp = Temp->pPrev;
+			return old;
+		}*/
+
+		bool operator==(const Iterator& other)const
+		{
+			return this->Temp == other.Temp;
+		}
+		bool operator!=(const Iterator& other)const
+		{
+			return this->Temp != other.Temp;
+		}
+
+		int& operator*()
+		{
+			return Temp->Data;
+		}
+
+		const int& operator*()const
+		{
+			return Temp->Data;
+		}
+	};
+	class ReverseIterator
+	{
+		Element* Temp;
+	public:
+		ReverseIterator(Element* Temp = nullptr) :Temp(Temp)
+		{
+			cout << "RICOnstructor:\t" << this << endl;
+		}
+		~ReverseIterator()
+		{
+			cout << "RIDenstructor:\t" << this << endl;
+		}
+		ReverseIterator& operator++()
+		{
+			Temp = Temp->pPrev;
+			return *this;
+		}
+		ReverseIterator operator++(int)
+		{
+			ReverseIterator old = *this;
+			Temp = Temp->pPrev;
+			return old;
+		}
+		ReverseIterator& operator--()
+		{
+			Temp = Temp->pNext;
+			return *this;
+		}
+		ReverseIterator operator--(int)
+		{
+			ReverseIterator old = *this;
+			Temp = Temp->pNext;
+			return old;
+		}
+
+		bool operator==(const ReverseIterator& other)const
+		{
+			return this->Temp == other.Temp;
+		}
+		bool operator!=(const ReverseIterator& other)const
+		{
+			return this->Temp != other.Temp;
+		}
+
+		const int& operator*() const
+		{
+			return Temp->Data;
+		}
+		int& operator*()
+		{
+			return Temp->Data;
+		}
+	};
+	size_t getSize()const
+	{
+		return size;
+	}
+
+	Iterator begin()
+	{
+		return Head;
+	}
+	Iterator end()
+	{
+		return nullptr;
+	}
+	ReverseIterator rbegin()
+	{
+		return Tail;
+	}
+	ReverseIterator rend()
+	{
+		return Head;
+	}
+
 	List()
 	{
 		Head = Tail = nullptr;
@@ -35,12 +194,43 @@ public:
 		cout << "LConstructor:\t" << this << endl;
 
 	}
+	explicit List(int size) :List()
+	{
+		while (size--)push_back(0);
+	}
+	List(const initializer_list<int>& il) :List()
+	{
+		cout << typeid(il.begin()).name() << endl;
+		for (int const* it = il.begin(); it != il.end(); it++)
+			push_back(*it);
+	}
 	~List()
 	{
 		//while (Head)pop_front();
 		while (Tail)pop_back();
 		cout << "LDestructor:\t" << this << endl;
+
 	}
+
+		//OPerators
+	int& operator[](size_t index)
+	{
+		Element* Temp;
+		if (index < size / 2)
+		{
+			Temp = Head;
+			for (size_t i = 0; i < index; i++) Temp = Temp->pNext;
+		}
+		else
+		{
+			Temp = Tail;
+			for (size_t i = 0; i < size - index - 1; i++) Temp = Temp->pPrev;
+		}
+		return Temp->Data;
+	}
+
+
+
 	// Adding elements:
 	void push_front(int Data)
 	{
@@ -50,10 +240,11 @@ public:
 			size++;
 			return;
 		}
-		Element* New = new Element(Data);
+		/*Element* New = new Element(Data);
 		New->pNext = Head;
 		New->pNext->pPrev = New;
-		Head = New;
+		Head = New;*/
+		Head = Head->pPrev = new Element(Data, Head);
 		size++;
 	}
 
@@ -65,10 +256,11 @@ public:
 			size++;
 			return;
 		}
-		Element* New = new Element(Data);
+		/*Element* New = new Element(Data);
 		New->pPrev = Tail;
 		Tail->pNext = New;
-		Tail = New;
+		Tail = New;*/
+		Tail = Tail->pNext = new Element(Data, nullptr, Tail);
 		size++;
 	}
 	void insert(unsigned int Index, int Data)
@@ -88,19 +280,20 @@ public:
 		if (Index < size / 2)
 		{
 		 Temp = Head;
-			for (int i = 0; i < Index; i++)Temp = Temp->pNext;
+			for (size_t i = 0; i < Index; i++)Temp = Temp->pNext;
 		}
 
 		else
 		{
 			Temp = Tail;
-			for (int i = 0; i < size - Index - 1; i++) Temp = Temp->pPrev;
+			for (size_t i = 0; i < size - Index - 1; i++) Temp = Temp->pPrev;
 		}
-		Element* New = new Element(Data);
+		/*Element* New = new Element(Data);
 		New->pNext = Temp;
 		New->pPrev = Temp->pPrev;
 		Temp -> pPrev->pNext = New;
-		Temp->pPrev = New;
+		Temp->pPrev = New;*/
+		Temp->pPrev = Temp->pPrev->pNext = new Element(Data, Temp, Temp->pPrev);
 		size++;
 	}
 
@@ -133,7 +326,7 @@ public:
 		Tail->pNext = nullptr;
 		size--;
 	}
-	void erase(int Index)
+	void erase(size_t Index)
 		/*{
 			if (Index > size)return;
 			if (Index == size)
@@ -182,12 +375,12 @@ public:
 		if (Index < size / 2)
 		{
 			Temp = Head;
-			for (int i = 0; i < Index; i++)Temp = Temp->pNext;
+			for (size_t i = 0; i < Index; i++)Temp = Temp->pNext;
 		}
 		else
 		{
 			Temp = Tail;
-			for (int i = 0; i<size - Index - 1; i++)Temp = Temp->pPrev;
+			for (size_t i = 0; i<size - Index - 1; i++)Temp = Temp->pPrev;
 		}
 		//1) Исключаем удаляемый элемент из списка:
 		Temp->pPrev->pNext = Temp->pNext;	//В указатель pNext элемента Temp->pPrev записываем адрес элемента Temp->pNext
@@ -221,11 +414,11 @@ public:
 void main()
 {
 	setlocale(LC_ALL, "");
-	int n;
-	cout << "Введите размер списка: "; cin >> n;
+	//int n; cout << "Введите размер списка: "; cin >> n;
+#ifdef BASE_CHECK
 	List list;
 	for (int i = 0; i < n; i++)
-		list.push_back(rand()%100);
+		list.push_back(rand() % 100);
 	/*list.print();
 	list.pop_front();*/
 	list.print();
@@ -242,7 +435,38 @@ void main()
 	list.erase(index);
 	list.print();
 	list.print_reverse();
+#endif // BASE_CHECK
 
-	
 
+#ifdef SIZE_CONSTRUCTOR_AND_INDEX_OPERATOR
+	List list(n);
+	for (size_t i = 0; i < list.getSize(); i++)list[i] = rand() % 100;
+	for (size_t i = 0; i < list.getSize(); i++) cout << list[i] << tab;
+	cout << endl;
+
+	list.print();
+#endif // SIZE_CONSTRUCTOR_AND_INDEX_OPERATOR
+
+	List list = { 3, 5, 8, 13, 21 };
+	list.print();
+	for (int i : list)
+		cout << i << tab;
+	cout << endl;
+	for (List::Iterator it = list.begin(); it != list.end(); ++it)
+	{
+		cout << *it << tab;
+	}
+	cout << endl;
+	cout << delimeter << endl;
+	/*for (List::Iterator it = list.end(); it !=list.begin(); --it)
+	{
+		cout << *it << tab;
+	}
+	cout << endl;*/
+
+	for (List::ReverseIterator it = list.rbegin(); it != list.rend(); it++)
+	{
+		cout << *it << tab;
+	}
+	cout << endl;
 }
