@@ -236,6 +236,12 @@ public:
 		for (int const* it = il.begin(); it != il.end(); it++)
 			push_back(*it);
 	}
+
+	List(const List& other) : List()
+	{
+		for (int i : other)push_back(i);
+		cout << "CopyConstructor:\t" << this<< end;
+	}
 	~List()
 	{
 		//while (Head)pop_front();
@@ -260,7 +266,13 @@ public:
 		}
 		return Temp->Data;
 	}
-
+	List& operator=(const List& other)
+	{
+		if (this == &other)return  *this;
+		while (Head)pop_front();
+		for (int i : other)push_back(i);
+		cout << "CopyAssignment:\t" << this << endl;
+	}
 
 
 	// Adding elements:
@@ -479,8 +491,10 @@ void main()
 	list.print();
 #endif // SIZE_CONSTRUCTOR_AND_INDEX_OPERATOR
 
+#ifdef ITERACTORS_CHECK
 	List list = { 3, 5, 8, 13, 21 };
-	list.print();
+	list.print()
+		;
 	for (int i : list)
 		cout << i << tab;
 	cout << endl;
@@ -490,11 +504,21 @@ void main()
 	}
 	cout << endl;
 	cout << delimeter << endl;
-	
+
 
 	for (List::ReverseIterator it = list.rbegin(); it != list.rend(); ++it)
 	{
 		cout << *it << tab;
 	}
 	cout << endl;
+#endif // ITERACTORS_CHECK
+
+	List list1 = { 3,5,8,13,21 };
+	list1.print();
+	//List list2 = list1;	//CopyCOnstructor
+
+	List list2;
+	list2 = list1;	//CopyAssignment
+	list2.print();
+
 }

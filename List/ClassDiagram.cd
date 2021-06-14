@@ -13,12 +13,12 @@
           <NewMemberFileName>main.cpp</NewMemberFileName>
         </TypeIdentifier>
       </Class>
-      <Class Name="List::Iterator" Collapsed="true">
+      <Class Name="List::ReverseIterator" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>main.cpp</NewMemberFileName>
         </TypeIdentifier>
       </Class>
-      <Class Name="List::ReverseIterator" Collapsed="true">
+      <Class Name="List::Iterator" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>main.cpp</NewMemberFileName>
         </TypeIdentifier>
