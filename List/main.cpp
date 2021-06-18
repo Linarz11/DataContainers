@@ -1,67 +1,64 @@
-﻿#include <iostream>
+﻿#pragma warning(disable:4326)
+#include<iostream>
 using namespace std;
 using std::cin;
 using std::cout;
 using std::endl;
+
 #define tab "\t"
-//#define BASE_CHECK
-//#define SIZE_CONSTRUCTOR_AND_INDEX_OPERATOR
+#define minitab " "
+#define delimiter "\n-----------------------------------------------------\n"
+
 //#define DEBUG
-#define delimeter "\n---------------------------------------------------------------------------------------------\n"
+
+template<typename T>
 class List
 {
 	class Element
 	{
-		int Data;		// значение элемента
-		Element* pNext; // указатель на следующий элемент
-		Element* pPrev; // указатель на предыдущий элемент
+		T Data;		//Значение элемента
+		Element* pNext;	//Указатель на следующий элемент
+		Element* pPrev;	//Указатель на предыдущий элемент
 	public:
-		Element(int Data, Element* pNext = nullptr, Element* pPrev = nullptr) //:Data(Data), pNext(pNext), pPrev(pPrev);
+		Element(T Data, Element* pNext = nullptr, Element* pPrev = nullptr)
 		{
 			this->Data = Data;
 			this->pNext = pNext;
 			this->pPrev = pPrev;
 #ifdef DEBUG
 			cout << "EConstructor:\t" << this << endl;
-
 #endif // DEBUG
 		}
 		~Element()
 		{
 #ifdef DEBUG
 			cout << "EDestructor:\t" << this << endl;
-
 #endif // DEBUG
 		}
-		friend class List;
-
+		friend class List<T>;
 	};
-	Element* Head;		//указатель на начальный элемент списка
-	Element* Tail;		//указатель на конечный элемент списка
-	unsigned int size;	// размер списка
+	Element* Head;	//Указатель на начальный элемент списка
+	Element* Tail;	//Указатель на конечный элемент списка
+	unsigned int size;	//Размер списка
 
-
-				//Base iterator
 	class BaseIterator
 	{
 	protected:
 		Element* Temp;
 	public:
-		BaseIterator(Element* Temp = nullptr) : Temp(Temp)
+		BaseIterator(Element* Temp = nullptr) :Temp(Temp)
 		{
 #ifdef DEBUG
-			cout << "BIConstructor:\t" << this << endl;
-
+			cout << "BITConstructor:\t" << this << endl;
 #endif // DEBUG
 		}
 		~BaseIterator()
 		{
 #ifdef DEBUG
-			cout << "BIDestructor:\t" << this << endl;
-
+			cout << "BITDestructor:\t" << this << endl;
 #endif // DEBUG
 		}
-		
+
 		bool operator==(const BaseIterator& other)const
 		{
 			return this->Temp == other.Temp;
@@ -70,23 +67,22 @@ class List
 		{
 			return this->Temp != other.Temp;
 		}
-
-		int& operator*()
+		const T& operator*()const
 		{
 			return Temp->Data;
 		}
-
-		const int& operator*()const
+		T& operator*()
 		{
 			return Temp->Data;
 		}
+		friend class Iterator;
+		friend class BaseIterator;
+
 	};
-
 public:
-	class Iterator:public BaseIterator
+	class Iterator :public BaseIterator
 	{
-		//Element* Temp;
-	public: 
+	public:
 		Iterator(Element* Temp = nullptr) :BaseIterator(Temp)
 		{
 #ifdef DEBUG
@@ -97,114 +93,88 @@ public:
 		{
 #ifdef DEBUG
 			cout << "ITDestructor:\t" << this << endl;
-
 #endif // DEBUG
 		}
 
-		Iterator& operator++()
+		Iterator& operator++()	//Prefix increment
 		{
-			Temp = Temp->pNext;
+			BaseIterator::Temp = BaseIterator::Temp->pNext;
 			return *this;
 		}
+
 		Iterator operator++(int)
 		{
 			Iterator old = *this;
-			Temp = Temp->pNext;
+			BaseIterator::Temp = BaseIterator::Temp->pNext;
 			return old;
 		}
 		Iterator& operator--()
 		{
-			Temp->pPrev;
+			BaseIterator::Temp = BaseIterator::Temp->pPrev;
 			return *this;
 		}
 		Iterator operator--(int)
 		{
 			Iterator old = *this;
-			Temp = Temp->pPrev;
+			BaseIterator::Temp = BaseIterator::Temp->pPrev;
 			return old;
 		}
-		/*Iterator& operator--()
-		{
-			Temp = Temp->pPrev;
-			return *this;
-		}
-		Iterator operator--(int)
-		{
-			Iterator old = *this;
-			Temp = Temp->pPrev;
-			return old;
-		}*/
-
-	/*	bool operator==(const Iterator& other)const
-		{
-			return this->Temp == other.Temp;
-		}
-		bool operator!=(const Iterator& other)const
-		{
-			return this->Temp != other.Temp;
-		}*/
-
-		
 	};
-	class ReverseIterator:public BaseIterator
+	class ReverseIterator :public BaseIterator
 	{
-		Element* Temp;
 	public:
 		ReverseIterator(Element* Temp = nullptr) :BaseIterator(Temp)
 		{
 #ifdef DEBUG
-			cout << "RICOnstructor:\t" << this << endl;
-
+			cout << "RITConstructor:\t" << this << endl;
 #endif // DEBUG
 		}
 		~ReverseIterator()
 		{
 #ifdef DEBUG
-			cout << "RIDenstructor:\t" << this << endl;
-
+			cout << "RITDestructor:\t" << this << endl;
 #endif // DEBUG
 		}
+
 		ReverseIterator& operator++()
 		{
-			Temp = Temp->pPrev;
+			BaseIterator::Temp = BaseIterator::Temp->pPrev;
 			return *this;
 		}
 		ReverseIterator operator++(int)
 		{
 			ReverseIterator old = *this;
-			Temp = Temp->pPrev;
+			BaseIterator::Temp = BaseIterator::Temp->pPrev;
 			return old;
 		}
 		ReverseIterator& operator--()
 		{
-			Temp = Temp->pNext;
+			BaseIterator::Temp = BaseIterator::Temp->pNext;
 			return *this;
 		}
 		ReverseIterator operator--(int)
 		{
 			ReverseIterator old = *this;
-			Temp = Temp->pNext;
+			BaseIterator::Temp = BaseIterator::Temp->pNext;
 			return old;
 		}
-
-		/*bool operator==(const ReverseIterator& other)const
-		{
-			return this->Temp == other.Temp;
-		}
-		bool operator!=(const ReverseIterator& other)const
-		{
-			return this->Temp != other.Temp;
-		}*/
-
 	};
 	size_t getSize()const
 	{
 		return size;
 	}
 
+	const Iterator begin()const
+	{
+		return Head;
+	}
 	Iterator begin()
 	{
 		return Head;
+	}
+	const Iterator end()const
+	{
+		return nullptr;
 	}
 	Iterator end()
 	{
@@ -224,47 +194,73 @@ public:
 		Head = Tail = nullptr;
 		size = 0;
 		cout << "LConstructor:\t" << this << endl;
-
 	}
 	explicit List(int size) :List()
 	{
 		while (size--)push_back(0);
 	}
-	List(const initializer_list<int>& il) :List()
+	List(const initializer_list<T>& il) :List()
 	{
 		cout << typeid(il.begin()).name() << endl;
-		for (int const* it = il.begin(); it != il.end(); it++)
+		for (T const* it = il.begin(); it != il.end(); it++)
 			push_back(*it);
+	}
+	List(const List<T>& other) :List()
+	{
+		for (T i : other)push_back(i);
+		cout << "CopyConstuctor:\t" << this << endl;
+	}
+	List(List<T>&& other)
+	{
+		this->size = other.size;
+		this->Head = other.Head;
+		this->Tail = other.Tail;
+		other.Head = other.Tail = nullptr;
+		cout << "MoveConstructor:\t" << this << endl;
 	}
 	~List()
 	{
 		//while (Head)pop_front();
 		while (Tail)pop_back();
 		cout << "LDestructor:\t" << this << endl;
-
 	}
 
-		//OPerators
-	int& operator[](size_t index)
+	//				Operators:
+	List<T>& operator=(const List<T>& other)
+	{
+		if (this == &other)return *this;
+		while (Head)pop_front();
+		for (T i : other)push_back(i);
+		cout << "CopyAssignment:\t" << this << endl;
+	}
+	List<T>& operator=(List<T>&& other)
+	{
+		while (Head)pop_front();
+		this->size = other.size;
+		this->Head = other.Head;
+		this->Tail = other.Tail;
+		other.Head = other.Tail = nullptr;
+		cout << "MoveAssignment:\t" << this << endl;
+		return *this;
+	}
+	T& operator[](size_t index)
 	{
 		Element* Temp;
 		if (index < size / 2)
 		{
 			Temp = Head;
-			for (size_t i = 0; i < index; i++) Temp = Temp->pNext;
+			for (size_t i = 0; i < index; i++)Temp = Temp->pNext;
 		}
 		else
 		{
 			Temp = Tail;
-			for (size_t i = 0; i < size - index - 1; i++) Temp = Temp->pPrev;
+			for (size_t i = 0; i < size - index - 1; i++)Temp = Temp->pPrev;
 		}
 		return Temp->Data;
 	}
 
-
-
-	// Adding elements:
-	void push_front(int Data)
+	//				Adding elements:
+	void push_front(T Data)
 	{
 		if (Head == nullptr && Tail == nullptr)
 		{
@@ -274,13 +270,12 @@ public:
 		}
 		/*Element* New = new Element(Data);
 		New->pNext = Head;
-		New->pNext->pPrev = New;
+		Head->pPrev = New;
 		Head = New;*/
 		Head = Head->pPrev = new Element(Data, Head);
 		size++;
 	}
-
-	void push_back(int Data)
+	void push_back(T Data)
 	{
 		if (Head == nullptr && Tail == nullptr)
 		{
@@ -295,7 +290,7 @@ public:
 		Tail = Tail->pNext = new Element(Data, nullptr, Tail);
 		size++;
 	}
-	void insert(unsigned int Index, int Data)
+	void insert(unsigned int Index, T Data)
 	{
 		if (Index > size)return;
 		if (Index == 0)
@@ -311,25 +306,24 @@ public:
 		Element* Temp;
 		if (Index < size / 2)
 		{
-		 Temp = Head;
+			Temp = Head;
 			for (size_t i = 0; i < Index; i++)Temp = Temp->pNext;
 		}
-
 		else
 		{
 			Temp = Tail;
-			for (size_t i = 0; i < size - Index - 1; i++) Temp = Temp->pPrev;
+			for (size_t i = 0; i < size - Index - 1; i++)Temp = Temp->pPrev;
 		}
 		/*Element* New = new Element(Data);
 		New->pNext = Temp;
 		New->pPrev = Temp->pPrev;
-		Temp -> pPrev->pNext = New;
+		Temp->pPrev->pNext = New;
 		Temp->pPrev = New;*/
 		Temp->pPrev = Temp->pPrev->pNext = new Element(Data, Temp, Temp->pPrev);
 		size++;
 	}
 
-			//Erasing elements
+	//			Erasing elements:
 	void pop_front()
 	{
 		if (Head == Tail)
@@ -358,95 +352,74 @@ public:
 		Tail->pNext = nullptr;
 		size--;
 	}
-	void erase(size_t Index)
-		/*{
-			if (Index > size)return;
-			if (Index == size)
-			{
-				pop_back();
-				return;
-			}
-			if (Index == 0)
-			{
-				pop_front();
-				return;
-			}
-
-			Element* Temp;
-			if (Index < size / 2)
-			{
-				Temp = Head;
-				for (int i = 0; i < Index; i++)
-				{
-					Temp = Temp->pNext;
-				}
-			}
-			else
-			{
-				Temp = Tail;
-				for (int i = 0; i < size - Index - 1; i++)Temp = Temp->pPrev;
-			}
-			Temp->pPrev->pNext = Temp->pNext;
-			Temp->pNext->pPrev = Temp->pPrev;
-			delete Temp;
-			size--;
-		}*/	  //Homework
+	void erase(size_t index)
 	{
-		if (Index == 0)
+		if (index == 0)
 		{
 			pop_front();
 			return;
 		}
-		if (Index == size-1)
+		if (index == size - 1)
 		{
 			pop_back();
 			return;
 		}
-		if (Index >= size)return;
+		if (index >= size)return;
+
 		Element* Temp;
-		if (Index < size / 2)
+		if (index < size / 2)
 		{
 			Temp = Head;
-			for (size_t i = 0; i < Index; i++)Temp = Temp->pNext;
+			for (size_t i = 0; i < index; i++)Temp = Temp->pNext;
 		}
 		else
 		{
 			Temp = Tail;
-			for (size_t i = 0; i<size - Index - 1; i++)Temp = Temp->pPrev;
+			for (size_t i = 0; i < size - index - 1; i++)Temp = Temp->pPrev;
 		}
 		//1) Исключаем удаляемый элемент из списка:
 		Temp->pPrev->pNext = Temp->pNext;	//В указатель pNext элемента Temp->pPrev записываем адрес элемента Temp->pNext
-		Temp->pNext->pPrev = Temp->pPrev;	//В указатель pPrev элемента Temp->pNext записываем адрес жлемента Temp->pPrev
+		Temp->pNext->pPrev = Temp->pPrev;	//В указатель pPrev элемента Temp->pNext записываем адрес элемента Temp->pPrev
 		//2) Удаляем элемент из памяти:
 		delete Temp;
 		//Mission complete
 	}
 
-			//Methods
+	//			Methods:
 	void print()
 	{
-		for (Element* Temp = Head; Temp; Temp = Temp-> pNext)
+		for (Element* Temp = Head; Temp; Temp = Temp->pNext)
 		{
-			cout << Temp<<tab ;
-			cout <<Temp<<tab<< Temp->pPrev << tab << Temp->Data << tab << Temp ->pNext << endl;
+			cout << Temp << tab << Temp->pPrev << tab << Temp->Data << tab << Temp->pNext << endl;
 		}
 		cout << "Количество элементов списка: " << size << endl;
 	}
-
-		void print_reverse()
-		{
-			for (Element* Temp = Tail; Temp; Temp = Temp->pPrev)
-			cout << Temp << tab<<Temp->pPrev<< tab << Temp->Data << tab << Temp ->pNext << endl;
+	void print_reverse()
+	{
+		for (Element* Temp = Tail; Temp; Temp = Temp->pPrev)
+			cout << Temp << tab << Temp->pPrev << tab << Temp->Data << tab << Temp->pNext << endl;
 		cout << "Количество элементов списка: " << size << endl;
-		}
+	}
+};
+template <typename T>
+List<T> operator+(const List<T>& left, const List<T>& right)
+{
+	List<T> cat = left;
+	for (T i : right)cat.push_back(i);
+	return cat;
+}
 
-	};
-
+//#define BASE_CHECK
+//#define SIZE_CONSTRUCTOR_AND_INDEX_OPERATOR
+//#define ITERATORS_CHECK
+//#define COPY_METHODS_CHECK
+//#define MOVE_METHODS_CHECK
+#define TEMPLATE_CHECK
 
 void main()
 {
-	setlocale(LC_ALL, "");
-	//int n; cout << "Введите размер списка: "; cin >> n;
+	setlocale(LC_ALL, "Russian");
+	//int n;	cout << "Введите размер списка: "; cin >> n;
 #ifdef BASE_CHECK
 	List list;
 	for (int i = 0; i < n; i++)
@@ -463,38 +436,65 @@ void main()
 	list.print();
 	list.print_reverse();
 
-	cout << "Введите индекс удаляемого элемента: "; cin >> value;
+	cout << "Введите индекс удавляемого элемента: "; cin >> index;
 	list.erase(index);
 	list.print();
 	list.print_reverse();
 #endif // BASE_CHECK
 
-
 #ifdef SIZE_CONSTRUCTOR_AND_INDEX_OPERATOR
+	//List list = n;	//Type conversion from int to List
 	List list(n);
 	for (size_t i = 0; i < list.getSize(); i++)list[i] = rand() % 100;
-	for (size_t i = 0; i < list.getSize(); i++) cout << list[i] << tab;
+	for (size_t i = 0; i < list.getSize(); i++)cout << list[i] << tab;
 	cout << endl;
-
 	list.print();
 #endif // SIZE_CONSTRUCTOR_AND_INDEX_OPERATOR
 
+#ifdef ITERATORS_CHECK
 	List list = { 3, 5, 8, 13, 21 };
 	list.print();
 	for (int i : list)
 		cout << i << tab;
 	cout << endl;
-	for (List::Iterator it = list.begin(); it != list.end(); ++it)
+	for (List::Iterator it = list.begin(); it != list.end(); it++)
 	{
 		cout << *it << tab;
 	}
 	cout << endl;
-	cout << delimeter << endl;
-	
-
+	cout << "\n----------------------------------------------------------\n";
 	for (List::ReverseIterator it = list.rbegin(); it != list.rend(); ++it)
 	{
 		cout << *it << tab;
 	}
 	cout << endl;
+#endif // ITERATORS_CHECK
+
+#ifdef COPY_METHODS_CHECK
+	List list1 = { 3,5,8,13,21 };
+	list1.print();
+	//List list2 = list1;	//CopyConstructor
+	List list2;
+	list2 = list1;	//CopyAssignment
+	list2.print();
+#endif // DEBUG
+
+#ifdef MOVE_METHODS_CHECK
+	List<int> list1 = { 3,5,8,13,21 };
+	List<int> list2 = { 34,55,89 };
+	cout << delimiter << endl;
+	//List list3 = list1 + list2;	//MoveConstructor
+	List<int> list3;
+	list3 = list1 + list2;	//MoveAssignment
+	cout << delimiter << endl;
+	list3.print();
+#endif // MOVE_METHODS_CHECK
+
+	List<int> i_list = { 3,5, 8, 13,21 };
+	i_list.print();
+	List<double> d_list = { 2.5, 3,14, 5.2, 8.3 };
+	d_list.print();
+	List <string> s_list = { "What", "can", "I", "do", "?" };
+	for (string i : s_list) cout << i << minitab; cout << endl;
+
 }
