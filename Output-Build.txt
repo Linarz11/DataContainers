@@ -1,0 +1,4 @@
+﻿Build started...
+1>------ Build started: Project: Binary_tree, Configuration: Debug Win32 ------
+1>Binary_tree.vcxproj -> C:\Users\DNS\source\repos\DataContainers\Debug\Binary_tree.exe
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
