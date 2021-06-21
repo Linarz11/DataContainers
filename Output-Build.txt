@@ -1,0 +1,4 @@
+﻿Build started...
+1>------ Build started: Project: List, Configuration: Debug Win32 ------
+1>List.vcxproj -> C:\Users\DNS\source\repos\DataContainers\Debug\List.exe
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
